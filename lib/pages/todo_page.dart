@@ -20,7 +20,42 @@ class _TodoPageState extends State<TodoPage> {
 
     addTodo(String name) {
       state.addTodo(name);
-      listKey.currentState!.insertItem(0);
+      listKey.currentState!.insertItem(
+        0,
+        duration: const Duration(milliseconds: 240),
+      );
+    }
+
+    removeTodo(Todo todo) {
+      var todoIndex = -1;
+      for (var i = 0; i < state.todos.length; i++) {
+        var t = state.todos[i];
+        if (todo.id == t.id) {
+          todoIndex = i;
+          break;
+        }
+      }
+
+      if (todoIndex < 0) {
+        return;
+      }
+
+      listKey.currentState!.removeItem(
+        todoIndex,
+        (context, animation) => TodoItem(
+          todo: todo,
+          animation: animation,
+          onRemove: (Todo _) {},
+          onToggle: (Todo _) {},
+        ),
+        duration: const Duration(milliseconds: 120),
+      );
+
+      state.deleteTodo(todo.id);
+    }
+
+    toggleTodo(Todo todo) {
+      state.toggleTodo(todo);
     }
 
     return Scaffold(
@@ -67,6 +102,8 @@ class _TodoPageState extends State<TodoPage> {
                               key: UniqueKey(),
                               todo: todo,
                               animation: animation,
+                              onToggle: toggleTodo,
+                              onRemove: removeTodo,
                             );
                           }),
                     ],
@@ -126,10 +163,15 @@ class TodoItem extends StatelessWidget {
   final Todo todo;
   final Animation<double> animation;
 
+  final void Function(Todo todo) onRemove;
+  final void Function(Todo todo) onToggle;
+
   const TodoItem({
     super.key,
     required this.todo,
     required this.animation,
+    required this.onRemove,
+    required this.onToggle,
   });
 
   @override
@@ -137,7 +179,7 @@ class TodoItem extends StatelessWidget {
     return SizeTransition(
       sizeFactor: animation,
       child: SizedBox(
-        height: 40.0,
+        height: 60.0,
         child: Card(
           margin: const EdgeInsets.all(4),
           elevation: 1,
@@ -150,7 +192,21 @@ class TodoItem extends StatelessWidget {
             ),
             child: Row(
               children: [
+                Checkbox(
+                  value: todo.isDone,
+                  onChanged: (bool? _) {
+                    onToggle(todo);
+                  },
+                ),
                 Text(todo.name),
+                const Spacer(flex: 1),
+                IconButton(
+                  color: Colors.redAccent,
+                  onPressed: () {
+                    onRemove(todo);
+                  },
+                  icon: const Icon(Icons.delete),
+                )
               ],
             ),
           ),

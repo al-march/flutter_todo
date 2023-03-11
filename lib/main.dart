@@ -44,6 +44,11 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
+  toggleTodo(Todo todo) {
+    todo.isDone = !todo.isDone;
+    notifyListeners();
+  }
+
   createTodo(String name) {
     var id = DateTime.now().toString();
     return Todo(
