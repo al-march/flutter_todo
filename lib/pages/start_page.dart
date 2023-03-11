@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todo_app/pages/todo_page.dart';
 
 class StartPage extends StatelessWidget {
   const StartPage({super.key});
@@ -6,6 +7,9 @@ class StartPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Welcome!'),
+      ),
       body: Center(
         child: Container(
           padding: const EdgeInsets.all(15.0),
@@ -36,7 +40,13 @@ class StartPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => {},
+                onPressed: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const TodoPage(),
+                      ))
+                },
                 child: const Padding(
                   padding: EdgeInsets.all(12.0),
                   child: Text("Get started"),
